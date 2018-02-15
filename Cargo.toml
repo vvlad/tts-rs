@@ -1,0 +1,12 @@
+[package]
+name = "tts"
+version = "0.1.0"
+authors = ["Vlad Verestiuc <verestiuc.vlad@gmail.com>"]
+
+[dependencies]
+rusoto_polly = { git = "https://github.com/rusoto/rusoto" } 
+rusoto_core = { git = "https://github.com/rusoto/rusoto" } 
+rodio = { git = "https://github.com/tomaka/rodio" }
+dbus-macros = "*"
+dbus = "*"
+isatty = "0.1"
