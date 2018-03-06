@@ -1,19 +1,21 @@
 
-BUILD_DIR := target/release/examples/
+TARGETS := target/release/say \
+  target/release/tts-service \
+  target/release/speak-selection
 
-all: say tts-service 
+all: $(TARGETS) 
 
-say:
-	cargo build --release --example say 
-	cp $(BUILD_DIR)/say .
-tts-service: 
-	cargo build --release --example server 
-	cp $(BUILD_DIR)/server tts-service
+target/release/say: src/bin/say.rs
+	cargo build --release --bin say 
 
+target/release/tts-service: 
+	cargo build --release --bin tts-service 
+
+target/release/speak-selection: src/bin/speak-selection.rs
+	cargo build --release --bin speak-selection
 clean:
-	rm -f say tts-service
+	rm -f $(TARGETS)
 
 install: all
-	sudo install say /usr/local/bin/
-	sudo install tts-service /usr/local/bin
-	install misc/tts.service ~/.config/systemd/
+	sudo install $(TARGETS) /usr/local/bin/
+	install misc/tts.service ~/.config/systemd/user
