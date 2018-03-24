@@ -1,4 +1,5 @@
 #![feature(mpsc_select)]
+#![feature(duration_extras)]
 extern crate dbus;
 #[macro_use]
 extern crate dbus_macros;

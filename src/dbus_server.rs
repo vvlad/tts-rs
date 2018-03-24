@@ -4,7 +4,7 @@ use std::rc::Rc;
 
 use std::sync::mpsc;
 use std::thread;
-
+use std::time;
 use tts::TTSService;
 use sound::{SoundService, Sound};
 
@@ -35,6 +35,7 @@ impl Controller {
                 command = channel.recv() => match command {
                     Ok(Message::Speak(text)) => { 
                         sound.send(Sound::Stop).ok();
+                        thread::sleep(time::Duration::from_millis(100));
                         tts.send(text).ok(); 
                     }
                     Ok(Message::Stop) => { sound.send(Sound::Stop).ok(); }
