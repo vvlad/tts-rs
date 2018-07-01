@@ -5,7 +5,7 @@
 There are 3 components (binaries) in this project:
   1. `tts-service` - a dbus daemon that listens for text to speech commands.
   2. `say` - a tool line tool that sends to `tts-service` the arguments or the piped input.
-  3. `speech-selection` a tool that sends to `tts-service` the content of the X11 selection.  
+  3. `speak-selection` a tool that sends to `tts-service` the content of the X11 selection.  
       You can bind this one to a key shortcut in order to make reading more pleasant.
 
 #### Requirements 
