@@ -2,9 +2,9 @@
 Description=TTS Service
 
 [Service]
-ExecStart=/usr/local/bin/tts-service
+ExecStart=$PREFIX/bin/tts-service
 KillMode=process
 Restart=always
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target

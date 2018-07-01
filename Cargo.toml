@@ -4,15 +4,19 @@ version = "0.1.0"
 authors = ["Vlad Verestiuc <verestiuc.vlad@gmail.com>"]
 
 [dependencies]
-rusoto_polly = { git = "https://github.com/rusoto/rusoto" } 
-rusoto_core = { git = "https://github.com/rusoto/rusoto" } 
-dbus-macros = "0.2.0"
+rusoto_polly = "0.32.0"
+rusoto_core = "0.32.0"
+dbus-macros = "0.2.3"
 dbus = "0.6.1"
-isatty = "0.1"
+isatty = "0.1.8"
 alto = "3.0.1"
 lewton = "0.8.0"
-byteorder = "1.2.1"
+byteorder = "1.2.3"
 punkt = "1.0.4"
-quick-xml = "0.11.0"
-clipboard = "0.4.4"
+xml-rs = "0.8"
+clipboard = "0.4.6"
 md5 = "0.3.7"
+toml = "0.4"
+serde_derive = "1.0"
+serde = "*"
+rust-ini = "0.12.1"

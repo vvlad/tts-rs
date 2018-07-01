@@ -1,0 +1,5 @@
+Package: tts
+Version: 0.1
+Maintainer: Vlad Verestiuc
+Architecture: amd64
+Description: Linux TTS service using AWS

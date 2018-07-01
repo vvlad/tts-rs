@@ -1,14 +1,29 @@
 #![feature(mpsc_select)]
 #![feature(duration_extras)]
+#![feature(iterator_flatten)]
+
 extern crate dbus;
 #[macro_use]
 extern crate dbus_macros;
-//mod server;
-mod tts;
-mod sound;
-mod dbus_server;
+extern crate toml;
 
-//pub use server::{DBusService, SpeechServer, DBusClient, DBUS_ID, DBUS_PATH};
+#[macro_use]
+extern crate serde_derive;
+extern crate ini;
+
+mod config;
+mod sound;
+mod tts;
+
+pub use config::Config;
+pub use sound::{Sound, SoundService};
 pub use tts::TTSService;
-pub use sound::{SoundService, Sound};
-pub use dbus_server::{DBUS_ID, DBUS_PATH, DBusClient, DBusService, Controller};
+
+use std::rc::Rc;
+pub const DBUS_ID: &'static str = "com.github.vvlad.tts";
+pub const DBUS_PATH: &'static str = "/com/github/vvlad/tts";
+
+dbus_interface!(DBUS_ID, interface DBusClient {
+    fn say(text: &str);
+    fn flush();
+});
