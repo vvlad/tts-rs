@@ -35,7 +35,8 @@ There are 3 components (binaries) in this project:
   
   You can run it as a systemd service but it needs to be under an X11 session or you can start the  
   `tts-service` using your X11 desktop environment auto start support.  
-  
+  On ubuntu and debian after installing the deb you can run `systemclt enable --user tts` and `systemctl start --user tts`  
+  after you `enable-linger` using `loginctl` for the user that you use in X11.  
 
 #### Voices
 
