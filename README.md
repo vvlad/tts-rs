@@ -1,11 +1,43 @@
 
-Linux TTS uing Amazon Polly voices
+### Linux TTS Service using Amazon Polly
 
 
-```sh
-make install
-```
-# Voices
+There are 3 components (binaries) in this project:
+  1. `tts-service` - a dbus daemon that listens for text to speech commands.
+  2. `say` - a tool line tool that sends to `tts-service` the arguments or the piped input.
+  3. `speech-selection` a tool that sends to `tts-service` the content of the X11 selection.  
+      You can bind this one to a key shortcut in order to make reading more pleasant.
+
+#### Requirements 
+
+   AWS account in order to access the Polly service and an access key that can be used to use it. 
+
+#### Configuration
+
+  If you have already an usable access key in your `.aws/credentials` it would be picked up.  
+  The default region is `eu-west-1` you might want to change it to something closer to you.  
+  The default voice is `Salli` in order to change you'll need to use `.config/tts.toml`   
+  configuration method.  
+
+  Using `.config/tts.toml` you can override the credentials and region from `.aws/credentials`   
+
+  ```toml
+  voice = "<one of the voices from the list excluding the language>"
+  speack_rate = "x-slow|slow|medium|fast|x-fast"  
+  #more on under the rate attribute https://docs.aws.amazon.com/polly/latest/dg/supported-ssml.html#prosody-tag
+  aws_access_key = "a valid aws access key id"
+  aws_secret_key = "a valid aws secret key"
+  aws_regio = "the aws region to be used"
+  ```
+  All the fields are optional.
+
+#### Running
+  
+  You can run it as a systemd service but it needs to be under an X11 session or you can start the  
+  `tts-service` using your X11 desktop environment auto start support.  
+  
+
+#### Voices
 
 Filiz - tr-TR
 Astrid - sv-SE
