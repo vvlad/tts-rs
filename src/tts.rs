@@ -6,7 +6,7 @@ extern crate xml;
 use self::punkt::params::Standard;
 use self::punkt::{SentenceTokenizer, TrainingData};
 use self::rusoto_core::Region;
-use self::rusoto_polly::{DescribeVoicesInput, Polly, PollyClient, SynthesizeSpeechInput, Voice};
+use self::rusoto_polly::{Polly, PollyClient, SynthesizeSpeechInput};
 use self::xml::writer::{EmitterConfig, XmlEvent};
 
 use config::Config;
@@ -19,7 +19,7 @@ pub struct TTSService {
     brain: TrainingData,
     channel: mpsc::Sender<Vec<u8>>,
     config: Config,
-    voice: Voice,
+    voice: String,
 }
 
 const MAX_LENGTH: usize = 1500;
@@ -34,45 +34,12 @@ impl TTSService {
         let aws = PollyClient::simple(region);
         let voice_name = config.voice.unwrap_or_default();
 
-        let voices =
-            aws.describe_voices(&DescribeVoicesInput {
-                language_code: None,
-                next_token: None,
-            }).sync()
-                .unwrap_or_default()
-                .voices
-                .unwrap_or_default();
-
-        let voice = voices.iter().find(|voice| {
-            if let Some(name) = voice.name.clone() {
-                name.to_uppercase() == voice_name.to_uppercase()
-            } else {
-                false
-            }
-        });
-
-        if let Some(voice) = voice {
-            println!("TTS Voice: {}", voice.name.clone().unwrap_or_default());
-            TTSService {
-                aws: aws,
-                brain: TrainingData::english(),
-                channel: channel,
-                voice: voice.clone(),
-                config: cfg,
-            }
-        } else {
-            panic!(
-                " `{}' is not a valid voice name pick one of {:?}",
-                voice_name,
-                voices
-                    .iter()
-                    .map(|voice| format!(
-                        "{}({})",
-                        voice.name.clone().unwrap(),
-                        voice.language_code.clone().unwrap()
-                    ))
-                    .collect::<Vec<_>>()
-            );
+        TTSService {
+            aws: aws,
+            brain: TrainingData::english(),
+            channel: channel,
+            voice: voice_name,
+            config: cfg,
         }
     }
 
@@ -89,7 +56,7 @@ impl TTSService {
 
     pub fn speak(&self, text: &str) {
         let mut input = SynthesizeSpeechInput::default();
-        input.voice_id = self.voice.name.clone().unwrap(); //"Salli".to_string();
+        input.voice_id = self.voice.clone(); //"Salli".to_string();
         input.output_format = "ogg_vorbis".to_string();
         input.text_type = Some("ssml".to_string());
         let mut parts: Vec<String> = vec![];
