@@ -7,6 +7,7 @@ pub struct Config {
     pub aws_region: Option<String>,
 }
 
+use dirs;
 use ini::Ini;
 use std::env;
 use std::fs::File;
@@ -35,7 +36,7 @@ impl Config {
     pub fn new() -> Config {
         let mut config = Config::default();
 
-        if let Ok(file) = Ini::load_from_file(env::home_dir().unwrap().join(".aws/credentials")) {
+        if let Ok(file) = Ini::load_from_file(dirs::home_dir().unwrap().join(".aws/credentials")) {
             if let Some(aws) = file.section(Some("default".to_owned())) {
                 if let Some(access_key) = aws.get("aws_access_key_id") {
                     config.aws_access_key = Some(access_key.to_string());
@@ -50,28 +51,44 @@ impl Config {
             }
         }
 
-        if let Ok(mut file) = File::open(env::home_dir().unwrap().join(".config/tts.toml")) {
+        if let Ok(mut file) = File::open(dirs::home_dir().unwrap().join(".config/tts.toml")) {
             let mut content = String::new();
             file.read_to_string(&mut content).is_ok();
 
-            if let Ok(mut cfg) = toml::from_str::<Config>(&content) {
-                if cfg.voice.is_some() {
-                    config.voice = cfg.voice.take();
+            match toml::from_str::<Config>(&content) {
+                Ok(mut cfg) => {
+                    if cfg.voice.is_some() {
+                        config.voice = cfg.voice.take();
+                    }
+                    if cfg.speak_rate.is_some() {
+                        config.speak_rate = cfg.speak_rate.take();
+                    }
+                    if cfg.aws_access_key.is_some() {
+                        config.aws_access_key = cfg.aws_access_key.take();
+                    }
+                    if cfg.aws_secret_key.is_some() {
+                        config.aws_secret_key = cfg.aws_secret_key.take();
+                    }
+                    if cfg.aws_region.is_some() {
+                        config.aws_region = cfg.aws_region.take();
+                    }
                 }
-                if cfg.speak_rate.is_some() {
-                    config.speak_rate = cfg.speak_rate.take();
-                }
-                if cfg.aws_access_key.is_some() {
-                    config.aws_access_key = cfg.aws_access_key.take();
-                }
-                if cfg.aws_secret_key.is_some() {
-                    config.aws_secret_key = cfg.aws_secret_key.take();
-                }
-                if cfg.aws_region.is_some() {
-                    config.aws_region = cfg.aws_region.take();
-                }
+                Err(e) => panic!(e),
             }
         }
+
+        let value = config
+            .clone()
+            .aws_access_key
+            .unwrap_or_else(|| panic!("Missing access key"));
+
+        env::set_var("AWS_ACCESS_KEY_ID", value);
+
+        let value = config
+            .clone()
+            .aws_secret_key
+            .unwrap_or_else(|| panic!("Missing secret key"));
+        env::set_var("AWS_SECRET_ACCESS_KEY", value);
 
         config
     }

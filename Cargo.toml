@@ -1,6 +1,6 @@
 [package]
 name = "tts"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Vlad Verestiuc <verestiuc.vlad@gmail.com>"]
 
 [dependencies]
@@ -20,3 +20,5 @@ toml = "0.4"
 serde_derive = "1.0"
 serde = "*"
 rust-ini = "0.12.1"
+dirs = "*"
+rusoto_credential = "*"

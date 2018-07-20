@@ -9,7 +9,9 @@ extern crate toml;
 
 #[macro_use]
 extern crate serde_derive;
+extern crate dirs;
 extern crate ini;
+extern crate rusoto_credential;
 
 mod config;
 mod sound;

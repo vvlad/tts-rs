@@ -5,12 +5,14 @@ extern crate xml;
 
 use self::punkt::params::Standard;
 use self::punkt::{SentenceTokenizer, TrainingData};
+use self::rusoto_core::reactor::{CredentialsProvider, RequestDispatcher};
+use self::rusoto_core::DefaultCredentialsProvider;
 use self::rusoto_core::Region;
 use self::rusoto_polly::{Polly, PollyClient, SynthesizeSpeechInput};
 use self::xml::writer::{EmitterConfig, XmlEvent};
 
 use config::Config;
-use std::env;
+use rusoto_credential::StaticProvider;
 use std::str::FromStr;
 use std::sync::mpsc;
 
@@ -29,10 +31,10 @@ impl TTSService {
         let cfg = config.clone();
         let region = Region::from_str(&config.aws_region.clone().unwrap()).unwrap();
 
-        env::set_var("AWS_ACCESS_KEY", config.aws_access_key.unwrap());
-        env::set_var("AWS_SECRET_ACCESS_KEY", config.aws_secret_key.unwrap());
-        let aws = PollyClient::simple(region);
         let voice_name = config.voice.unwrap_or_default();
+        println!("Using voice: {}", voice_name);
+
+        let aws = PollyClient::simple(region);
 
         TTSService {
             aws: aws,
@@ -56,7 +58,7 @@ impl TTSService {
 
     pub fn speak(&self, text: &str) {
         let mut input = SynthesizeSpeechInput::default();
-        input.voice_id = self.voice.clone(); //"Salli".to_string();
+        input.voice_id = self.voice.clone();
         input.output_format = "ogg_vorbis".to_string();
         input.text_type = Some("ssml".to_string());
         let mut parts: Vec<String> = vec![];
@@ -76,7 +78,10 @@ impl TTSService {
                 Ok(output) => {
                     self.channel.send(output.audio_stream.unwrap()).ok();
                 }
-                Err(e) => println!("error: {:?}", e),
+                Err(e) => {
+                    println!("error: {:?}", e);
+                    panic!(e)
+                }
             };
         }
     }
