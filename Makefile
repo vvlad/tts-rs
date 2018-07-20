@@ -10,7 +10,7 @@ all: $(TARGETS)
 target/release/say: src/bin/say.rs
 	cargo build --release --bin say
 
-target/release/tts-service: src/tts.rs src/config.rs src/dbus.rs src/lib.rs src/server.rs src/sound.rs
+target/release/tts-service: src/tts.rs src/config.rs src/dbus.rs src/lib.rs src/sound.rs
 	cargo build --release --bin tts-service
 
 target/release/speak-selection: src/bin/speak-selection.rs
