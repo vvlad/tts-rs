@@ -5,14 +5,11 @@ extern crate xml;
 
 use self::punkt::params::Standard;
 use self::punkt::{SentenceTokenizer, TrainingData};
-use self::rusoto_core::reactor::{CredentialsProvider, RequestDispatcher};
-use self::rusoto_core::DefaultCredentialsProvider;
 use self::rusoto_core::Region;
 use self::rusoto_polly::{Polly, PollyClient, SynthesizeSpeechInput};
 use self::xml::writer::{EmitterConfig, XmlEvent};
 
 use config::Config;
-use rusoto_credential::StaticProvider;
 use std::str::FromStr;
 use std::sync::mpsc;
 
@@ -34,7 +31,7 @@ impl TTSService {
         let voice_name = config.voice.unwrap_or_default();
         println!("Using voice: {}", voice_name);
 
-        let aws = PollyClient::simple(region);
+        let aws = PollyClient::new(region);
 
         TTSService {
             aws: aws,
@@ -74,7 +71,7 @@ impl TTSService {
 
         for part in parts {
             input.text = self.to_xml(part);
-            match self.aws.synthesize_speech(&input.clone()).sync() {
+            match self.aws.synthesize_speech(input.clone()).sync() {
                 Ok(output) => {
                     self.channel.send(output.audio_stream.unwrap()).ok();
                 }
@@ -98,8 +95,7 @@ impl TTSService {
                 .write(
                     XmlEvent::start_element(PROSODY_TAG)
                         .attr("rate", &self.config.speak_rate.clone().unwrap()),
-                )
-                .is_ok();
+                ).is_ok();
             writer.write(XmlEvent::characters(&text)).is_ok();
             writer.write(XmlEvent::end_element()).is_ok();
             writer.write(XmlEvent::end_element()).is_ok();

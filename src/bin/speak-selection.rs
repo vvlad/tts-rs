@@ -1,21 +1,21 @@
-extern crate dbus;
 extern crate clipboard;
-extern crate isatty;
-extern crate tts;
+extern crate dbus;
 extern crate md5;
+extern crate tts;
 
-use std::rc::Rc;
+use clipboard::x11_clipboard::{Primary, X11ClipboardContext};
 use clipboard::ClipboardProvider;
-use clipboard::x11_clipboard::{X11ClipboardContext, Primary};
-use std::fs::{File, remove_file};
+use std::fs::{remove_file, File};
 use std::io::prelude::*;
+use std::rc::Rc;
 
 const STATE_FILE: &'static str = "/tmp/speak-selection.md5";
 
-fn main(){
-    let session_connection = Rc::new(dbus::Connection::get_private(dbus::BusType::Session).unwrap());
+fn main() {
+    let session_connection =
+        Rc::new(dbus::Connection::get_private(dbus::BusType::Session).unwrap());
     let engine = tts::DBusClient::new(tts::DBUS_ID, tts::DBUS_PATH, session_connection);
-    let mut context: X11ClipboardContext<Primary>  = ClipboardProvider::new().unwrap(); 
+    let mut context: X11ClipboardContext<Primary> = ClipboardProvider::new().unwrap();
 
     if let Ok(text) = context.get_contents() {
         let digest = format!("{:x}", md5::compute(text.clone().into_bytes()));
@@ -25,9 +25,12 @@ fn main(){
             return;
         }
 
-        File::create(STATE_FILE).expect("can't create state file").write_all(&digest.clone().into_bytes()).ok();
+        File::create(STATE_FILE)
+            .expect("can't create state file")
+            .write_all(&digest.clone().into_bytes())
+            .ok();
         engine.say(&text).ok();
-    }else{
+    } else {
         engine.flush().ok();
     }
 }
