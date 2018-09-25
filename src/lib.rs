@@ -1,29 +1,34 @@
-#![feature(mpsc_select)]
-
+extern crate punkt;
+#[macro_use]
+extern crate lazy_static;
+extern crate lewton;
+extern crate rusoto_core;
+extern crate rusoto_polly;
+extern crate tokio;
+extern crate xml;
+#[macro_use]
+extern crate error_chain;
+extern crate cpal;
 extern crate dbus;
 #[macro_use]
 extern crate dbus_macros;
-extern crate toml;
-
+extern crate ini;
 #[macro_use]
 extern crate serde_derive;
 extern crate dirs;
-extern crate ini;
-extern crate rusoto_credential;
+extern crate toml;
 
+mod errors;
+
+pub use self::errors::Error;
+
+mod voice;
+pub use self::voice::Voice;
+mod sentence;
+pub use self::sentence::{Sentence, Sentences};
+mod player;
+pub use self::player::Player;
+mod dbus_interface;
+pub use dbus_interface::{DBusClient, DBUS_ID, DBUS_PATH};
 mod config;
-mod sound;
-mod tts;
-
 pub use config::Config;
-pub use sound::{Sound, SoundService};
-pub use tts::TTSService;
-
-use std::rc::Rc;
-pub const DBUS_ID: &'static str = "com.github.vvlad.tts";
-pub const DBUS_PATH: &'static str = "/com/github/vvlad/tts";
-
-dbus_interface!(DBUS_ID, interface DBusClient {
-    fn say(text: &str);
-    fn flush();
-});

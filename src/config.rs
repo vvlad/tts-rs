@@ -9,9 +9,11 @@ pub struct Config {
 
 use dirs;
 use ini::Ini;
+use rusoto_core::Region;
 use std::env;
 use std::fs::File;
 use std::io::prelude::*;
+use std::str::FromStr;
 use toml;
 
 impl Default for Config {
@@ -33,6 +35,9 @@ impl Default for Config {
 }
 
 impl Config {
+    pub fn aws_region(&self) -> Region {
+        Region::from_str(&self.aws_region.clone().expect("invalid region")).expect("invalid region")
+    }
     pub fn new() -> Config {
         let mut config = Config::default();
 
